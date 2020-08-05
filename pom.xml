@@ -12,6 +12,7 @@
         <module>mybatis-tool-common</module>
         <module>mybatis-page-plugin</module>
         <module>mybatis-tool-samples</module>
+        <module>mybatis-plugin-spring-boot-starter</module>
     </modules>
 
     <distributionManagement>
@@ -24,6 +25,7 @@
     <!--项目组件依赖版本管理-->
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <java.version>1.8</java.version>
         <maven.compiler.target>1.8</maven.compiler.target>
         <maven.compiler.source>1.8</maven.compiler.source>
 
@@ -31,6 +33,7 @@
         <lombok-version>1.18.12</lombok-version>
         <commons-lang3-version>3.9</commons-lang3-version>
         <junit-version>4.12</junit-version>
+        <spring-boot-version>2.3.2.RELEASE</spring-boot-version>
     </properties>
 
     <!--版本管理-->
@@ -65,6 +68,20 @@
                 <artifactId>junit</artifactId>
                 <version>${junit-version}</version>
                 <scope>test</scope>
+            </dependency>
+
+            <dependency>
+                <groupId>com.zhishu</groupId>
+                <artifactId>mybatis-page-plugin</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <!--springboot依赖管理-->
+            <dependency>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-dependencies</artifactId>
+                <version>${spring-boot-version}</version>
+                <type>pom</type>
+                <scope>import</scope>
             </dependency>
         </dependencies>
     </dependencyManagement>
