@@ -1,17 +1,17 @@
 package com.zhishu.interceptors;
 
 import com.zhishu.common.dto.Page;
+import com.zhishu.enums.SqlFormatMatch;
+import com.zhishu.processors.PageSqlFormatProcessor;
 import org.apache.ibatis.executor.statement.StatementHandler;
 import org.apache.ibatis.mapping.BoundSql;
 import org.apache.ibatis.plugin.Interceptor;
 import org.apache.ibatis.plugin.Intercepts;
 import org.apache.ibatis.plugin.Invocation;
 import org.apache.ibatis.plugin.Signature;
+import org.apache.ibatis.reflection.SystemMetaObject;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
 import java.util.Map;
 import java.util.Properties;
 
@@ -37,30 +37,30 @@ public class PageInterceptor implements Interceptor {
         BoundSql boundSql = statementHandler.getBoundSql();
         //获取所有的参数
         Object parameterObject = boundSql.getParameterObject();
+        //筛选参数里有没有携带分页参数
         Page page = null;
         if(parameterObject instanceof Page) {
             page = (Page) parameterObject;
         }else if(parameterObject instanceof Map){
             page = (Page) ((Map) parameterObject).values().stream().filter(v -> v instanceof Page).findFirst().orElse(null);
         }
-
-        if(page != null) {
-            int totalCount = selectCount(invocation);
-            page.setTotalRecord(totalCount);
+        //如果携带分页参数
+        if(page == null) {
+            return invocation.proceed();
         }
-        //直接放行  执行原有的方法逻辑
+        //获取总条数
+        int totalCount = selectCount(invocation);
+        //设置分页总条数
+        page.setTotalRecord(totalCount);
+        Connection connection = (Connection) invocation.getArgs()[0];
+        PageSqlFormatProcessor pageSqlFormatProcessor = SqlFormatMatch.match(getDbType(connection));
+        //获取分页后的sql
+        String newSql = pageSqlFormatProcessor.sqlConversion(boundSql.getSql(),page);
+        //替换sql
+        SystemMetaObject.forObject(boundSql).setValue("sql",newSql);
+        //放行
         return invocation.proceed();
     }
-
-    @Override
-    public Object plugin(Object target) {
-        return null;
-    }
-
-    @Override
-    public void setProperties(Properties properties) {
-    }
-
     /**
      * 获取总条数
      * @param invocation 拦截数据
@@ -73,13 +73,13 @@ public class PageInterceptor implements Interceptor {
         //获取原生的sql
         String sql = boundSql.getSql();
         //拼装查询sql
-        String countSql = String.format("select count(*) from %s _page_count", sql);
+        String countSql = String.format("select count(*) from (%s)  _page_count", sql);
         //获取数据库链接
         Connection connection = (Connection) invocation.getArgs()[0];
         //获取预编译对象
         PreparedStatement preparedStatement = connection.prepareStatement(countSql);
         //设置原来的参数
-        statementHandler.getParameterHandler().setParameters(preparedStatement);
+        statementHandler.parameterize(preparedStatement);
         //开始执行
         ResultSet resultSet = preparedStatement.executeQuery();
         //获取总数
@@ -89,5 +89,21 @@ public class PageInterceptor implements Interceptor {
         resultSet.close();
         preparedStatement.close();
         return totalCount;
+    }
+
+    /**
+     * 获取数据库信息
+     * @param connection 数据库链接对象
+     * @return 数据库类型
+     */
+    private static String getDbType(Connection connection){
+        String dbType = null;
+        try {
+            DatabaseMetaData metaData = connection.getMetaData();
+            dbType = metaData.getDriverName();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return dbType;
     }
 }

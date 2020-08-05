@@ -11,6 +11,7 @@
     <modules>
         <module>mybatis-tool-common</module>
         <module>mybatis-page-plugin</module>
+        <module>mybatis-tool-samples</module>
     </modules>
 
     <distributionManagement>
@@ -29,6 +30,7 @@
         <mybatis-version>3.5.4</mybatis-version>
         <lombok-version>1.18.12</lombok-version>
         <commons-lang3-version>3.9</commons-lang3-version>
+        <junit-version>4.12</junit-version>
     </properties>
 
     <!--版本管理-->
@@ -56,6 +58,13 @@
                 <groupId>com.zhishu</groupId>
                 <artifactId>mybatis-tool-common</artifactId>
                 <version>${project.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>junit</groupId>
+                <artifactId>junit</artifactId>
+                <version>${junit-version}</version>
+                <scope>test</scope>
             </dependency>
         </dependencies>
     </dependencyManagement>

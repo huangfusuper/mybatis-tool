@@ -1,6 +1,14 @@
 package com.zhishu.common.enums.exception;
 
+/**
+ * mybatis错误枚举
+ * @author huangfu
+ */
 public enum MyBatisPageErrorCode implements ErrorCode {
+    /**
+     * 不支持该类数据库类型
+     */
+    NOT_SUPPORT_DB_TYPE("not support db type","分页工具暂不支持该数据库类型，如有需要请反馈至github issue！"),
     ;
 
     /**
@@ -11,6 +19,11 @@ public enum MyBatisPageErrorCode implements ErrorCode {
      * 错误信息
      */
     private String msg;
+
+    MyBatisPageErrorCode(String code, String msg) {
+        this.code = code;
+        this.msg = msg;
+    }
 
     @Override
     public String getCode() {
