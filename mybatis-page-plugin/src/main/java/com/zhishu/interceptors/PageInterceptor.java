@@ -13,19 +13,39 @@ import org.apache.ibatis.reflection.SystemMetaObject;
 
 import java.sql.*;
 import java.util.Map;
-import java.util.Properties;
 
 /**
  * 分页插件拦截器
- * @see Intercepts 该注解用于指定拦截的方法 type为要拦截的类  method为拦截的该类里面的方法 args为该方法的参数类型
+ *
  * @author huangfu
+ * @see Intercepts 该注解用于指定拦截的方法 type为要拦截的类  method为拦截的该类里面的方法 args为该方法的参数类型
  */
 @Intercepts({@Signature(type = StatementHandler.class, method = "prepare", args = {Connection.class, Integer.class})})
 @SuppressWarnings("all")
 public class PageInterceptor implements Interceptor {
 
+    public static final String PAGE_CPUNT_SQL = "select count(*) from (%s)  _page_count";
+
+    /**
+     * 获取数据库信息
+     *
+     * @param connection 数据库链接对象
+     * @return 数据库类型
+     */
+    private static String getDbType(Connection connection) {
+        String dbType = null;
+        try {
+            DatabaseMetaData metaData = connection.getMetaData();
+            dbType = metaData.getDriverName();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return dbType;
+    }
+
     /**
      * 拦截方法回调数据
+     *
      * @param invocation 拦截数据
      * @return 代理后的逻辑
      * @throws Throwable 最终结果集
@@ -39,13 +59,13 @@ public class PageInterceptor implements Interceptor {
         Object parameterObject = boundSql.getParameterObject();
         //筛选参数里有没有携带分页参数
         Page page = null;
-        if(parameterObject instanceof Page) {
+        if (parameterObject instanceof Page) {
             page = (Page) parameterObject;
-        }else if(parameterObject instanceof Map){
+        } else if (parameterObject instanceof Map) {
             page = (Page) ((Map) parameterObject).values().stream().filter(v -> v instanceof Page).findFirst().orElse(null);
         }
         //如果携带分页参数
-        if(page == null) {
+        if (page == null) {
             return invocation.proceed();
         }
         //获取总条数
@@ -55,14 +75,16 @@ public class PageInterceptor implements Interceptor {
         Connection connection = (Connection) invocation.getArgs()[0];
         PageSqlFormatProcessor pageSqlFormatProcessor = SqlFormatMatch.match(getDbType(connection));
         //获取分页后的sql
-        String newSql = pageSqlFormatProcessor.sqlConversion(boundSql.getSql(),page);
+        String newSql = pageSqlFormatProcessor.sqlConversion(boundSql.getSql(), page);
         //替换sql
-        SystemMetaObject.forObject(boundSql).setValue("sql",newSql);
+        SystemMetaObject.forObject(boundSql).setValue("sql", newSql);
         //放行
         return invocation.proceed();
     }
+
     /**
      * 获取总条数
+     *
      * @param invocation 拦截数据
      * @return 该sql的总条数
      */
@@ -73,7 +95,7 @@ public class PageInterceptor implements Interceptor {
         //获取原生的sql
         String sql = boundSql.getSql();
         //拼装查询sql
-        String countSql = String.format("select count(*) from (%s)  _page_count", sql);
+        String countSql = String.format(PAGE_CPUNT_SQL, sql);
         //获取数据库链接
         Connection connection = (Connection) invocation.getArgs()[0];
         //获取预编译对象
@@ -83,27 +105,11 @@ public class PageInterceptor implements Interceptor {
         //开始执行
         ResultSet resultSet = preparedStatement.executeQuery();
         //获取总数
-        if(resultSet.next()) {
+        if (resultSet.next()) {
             totalCount = resultSet.getInt(1);
         }
         resultSet.close();
         preparedStatement.close();
         return totalCount;
-    }
-
-    /**
-     * 获取数据库信息
-     * @param connection 数据库链接对象
-     * @return 数据库类型
-     */
-    private static String getDbType(Connection connection){
-        String dbType = null;
-        try {
-            DatabaseMetaData metaData = connection.getMetaData();
-            dbType = metaData.getDriverName();
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return dbType;
     }
 }
