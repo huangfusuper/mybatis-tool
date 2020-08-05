@@ -41,6 +41,12 @@ public class TestMapperTest {
         List<TestEntity> all = mapper.findAll(testEntityPage);
         testEntityPage.setResults(all);
         System.out.println(testEntityPage);
+
+        Page<TestEntity> testEntityPage2 = new Page<>();
+        testEntityPage2.setPageNo(2);
+        List<TestEntity> all2 = mapper.findAll(testEntityPage);
+        testEntityPage2.setResults(all2);
+        System.out.println(testEntityPage2);
     }
 
     @Test

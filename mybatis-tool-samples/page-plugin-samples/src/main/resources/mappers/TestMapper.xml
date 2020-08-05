@@ -4,7 +4,7 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
 <mapper namespace="com.zhishu.samples.mappers.TestMapper">
-
+    <cache></cache>
     <select id="findAll" resultType="com.zhishu.samples.entitys.TestEntity">
         SELECT * FROM tb_ep11
     </select>
