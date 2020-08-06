@@ -3,16 +3,13 @@ package com.zhishu.interceptors;
 import com.zhishu.common.dto.Page;
 import com.zhishu.enums.SqlFormatMatch;
 import com.zhishu.processors.PageSqlFormatProcessor;
+import com.zhishu.utils.ParameterObjectUtil;
 import org.apache.ibatis.executor.statement.StatementHandler;
 import org.apache.ibatis.mapping.BoundSql;
-import org.apache.ibatis.plugin.Interceptor;
-import org.apache.ibatis.plugin.Intercepts;
-import org.apache.ibatis.plugin.Invocation;
-import org.apache.ibatis.plugin.Signature;
+import org.apache.ibatis.plugin.*;
 import org.apache.ibatis.reflection.SystemMetaObject;
 
 import java.sql.*;
-import java.util.Map;
 
 /**
  * 分页插件拦截器
@@ -58,12 +55,7 @@ public class PageInterceptor implements Interceptor {
         //获取所有的参数
         Object parameterObject = boundSql.getParameterObject();
         //筛选参数里有没有携带分页参数
-        Page page = null;
-        if (parameterObject instanceof Page) {
-            page = (Page) parameterObject;
-        } else if (parameterObject instanceof Map) {
-            page = (Page) ((Map) parameterObject).values().stream().filter(v -> v instanceof Page).findFirst().orElse(null);
-        }
+        Page page = ParameterObjectUtil.getPageParam(parameterObject);
         //如果携带分页参数
         if (page == null) {
             return invocation.proceed();
@@ -111,5 +103,10 @@ public class PageInterceptor implements Interceptor {
         resultSet.close();
         preparedStatement.close();
         return totalCount;
+    }
+
+    @Override
+    public Object plugin(Object target) {
+        return Plugin.wrap(target, this);
     }
 }
