@@ -4,7 +4,7 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
 <mapper namespace="com.zhishu.samples.mapper.LogMapper">
-    <cache/>
+    <!--<cache/>-->
     <select id="findAll" resultType="com.zhishu.samples.entitys.Log">
         SELECT * FROM log
     </select>
