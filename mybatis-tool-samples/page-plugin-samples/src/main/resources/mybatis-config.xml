@@ -10,6 +10,7 @@
     <plugins>
         <plugin interceptor="com.zhishu.interceptors.PageInterceptor"/>
         <plugin interceptor="com.zhishu.interceptors.ResultInterceptor"/>
+        <plugin interceptor="com.zhishu.interceptors.CachePageInterceptor"/>
     </plugins>
     <environments default="development">
         <environment id="development">
