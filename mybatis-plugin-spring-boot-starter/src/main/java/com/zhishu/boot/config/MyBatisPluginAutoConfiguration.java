@@ -2,6 +2,7 @@ package com.zhishu.boot.config;
 
 import com.zhishu.boot.config.properties.MyBatisToolConfigurationProperties;
 import com.zhishu.boot.mark.MyBatisPagePluginMark;
+import com.zhishu.interceptors.CachePageInterceptor;
 import com.zhishu.interceptors.PageInterceptor;
 import com.zhishu.interceptors.ResultInterceptor;
 import org.apache.ibatis.plugin.Interceptor;
@@ -36,5 +37,15 @@ public class MyBatisPluginAutoConfiguration {
     @Bean
     public Interceptor resultInterceptor(){
         return new ResultInterceptor();
+    }
+
+    /**
+     * 分页插件 二级缓存拦截器注册
+     * @return 结果集拦截器
+     */
+    @ConditionalOnBean(MyBatisPagePluginMark.class)
+    @Bean
+    public Interceptor cachePageInterceptor(){
+        return new CachePageInterceptor();
     }
 }
