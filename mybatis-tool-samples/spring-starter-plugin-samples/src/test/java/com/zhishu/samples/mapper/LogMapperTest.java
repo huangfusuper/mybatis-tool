@@ -23,5 +23,9 @@ public class LogMapperTest {
         Page<Log> logPage = new Page<>();
         logMapper.findAll(logPage);
         System.out.println(logPage);
+        Page<Log> logPage2 = new Page<>();
+        System.out.println(logMapper.findAll(logPage2));
+        System.out.println(logPage2);
+
     }
 }
