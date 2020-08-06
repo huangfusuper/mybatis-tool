@@ -5,7 +5,7 @@
 <configuration>
     <settings>
         <setting name="logImpl" value="LOG4J"/>
-        <setting name="cacheEnabled" value="true"/>
+        <setting name="cacheEnabled" value="false"/>
     </settings>
     <plugins>
         <plugin interceptor="com.zhishu.interceptors.PageInterceptor"/>

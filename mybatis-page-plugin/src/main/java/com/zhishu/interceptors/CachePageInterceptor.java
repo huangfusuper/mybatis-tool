@@ -4,7 +4,6 @@ import com.zhishu.common.dto.Page;
 import com.zhishu.config.CachePageConfig;
 import com.zhishu.utils.ParameterObjectUtil;
 import org.apache.ibatis.cache.CacheKey;
-import org.apache.ibatis.executor.CachingExecutor;
 import org.apache.ibatis.executor.Executor;
 import org.apache.ibatis.mapping.BoundSql;
 import org.apache.ibatis.mapping.MappedStatement;
@@ -13,7 +12,7 @@ import org.apache.ibatis.session.ResultHandler;
 import org.apache.ibatis.session.RowBounds;
 
 /**
- * 解决开启二级缓存后无法获取分页数据的缓存处理器
+ * 分页数据的缓存处理拦截器
  *
  * @author huangfu
  */
@@ -25,12 +24,12 @@ public class CachePageInterceptor implements Interceptor {
     public Object intercept(Invocation invocation) throws Throwable {
         //获取参数
         Object[] args = invocation.getArgs();
-        CachingExecutor cachingExecutor = (CachingExecutor) invocation.getTarget();
+        Executor executor = (Executor) invocation.getTarget();
         //获取jdbc执行器
         MappedStatement mappedStatement = (MappedStatement) args[0];
         BoundSql boundSql = mappedStatement.getBoundSql(args[1]);
         //获取缓存key
-        CacheKey cacheKey = cachingExecutor.createCacheKey(mappedStatement, args[1], (RowBounds) args[2], boundSql);
+        CacheKey cacheKey = executor.createCacheKey(mappedStatement, args[1], (RowBounds) args[2], boundSql);
         Page page = CachePageConfig.PAGE_CACHE.get(cacheKey);
         Object result = invocation.proceed();
         //结果集
