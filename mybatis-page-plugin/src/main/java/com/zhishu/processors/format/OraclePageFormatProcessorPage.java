@@ -1,7 +1,6 @@
-package com.zhishu.processors.impl;
+package com.zhishu.processors.format;
 
 import com.zhishu.common.dto.Page;
-import com.zhishu.processors.PageSqlFormatProcessor;
 
 /**
  * oracle分页sql格式化器

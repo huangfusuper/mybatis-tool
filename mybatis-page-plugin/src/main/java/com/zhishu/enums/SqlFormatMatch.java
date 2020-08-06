@@ -2,9 +2,9 @@ package com.zhishu.enums;
 
 import com.zhishu.common.enums.exception.MyBatisPageErrorCode;
 import com.zhishu.common.exception.MyBatisToolException;
-import com.zhishu.processors.PageSqlFormatProcessor;
-import com.zhishu.processors.impl.MyPageSqlPageFormatProcessor;
-import com.zhishu.processors.impl.OraclePageFormatProcessorPage;
+import com.zhishu.processors.format.PageSqlFormatProcessor;
+import com.zhishu.processors.format.MyPageSqlPageFormatProcessor;
+import com.zhishu.processors.format.OraclePageFormatProcessorPage;
 
 import java.util.Arrays;
 
