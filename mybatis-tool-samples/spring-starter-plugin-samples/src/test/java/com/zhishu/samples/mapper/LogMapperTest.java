@@ -21,8 +21,7 @@ public class LogMapperTest {
     @Test
     public void findAll() {
         Page<Log> logPage = new Page<>();
-        List<Log> all = logMapper.findAll(logPage);
-        logPage.setResults(all);
+        logMapper.findAll(logPage);
         System.out.println(logPage);
     }
 }
