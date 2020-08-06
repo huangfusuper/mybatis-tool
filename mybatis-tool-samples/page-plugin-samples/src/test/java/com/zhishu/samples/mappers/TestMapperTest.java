@@ -39,14 +39,7 @@ public class TestMapperTest {
         Page<TestEntity> testEntityPage = new Page<>();
         testEntityPage.setPageNo(2);
         List<TestEntity> all = mapper.findAll(testEntityPage);
-        testEntityPage.setResults(all);
         System.out.println(testEntityPage);
-
-        Page<TestEntity> testEntityPage2 = new Page<>();
-        testEntityPage2.setPageNo(2);
-        List<TestEntity> all2 = mapper.findAll(testEntityPage);
-        testEntityPage2.setResults(all2);
-        System.out.println(testEntityPage2);
     }
 
     @Test
@@ -56,7 +49,6 @@ public class TestMapperTest {
         TestMapper mapper = sqlSession.getMapper(TestMapper.class);
         Page<TestEntity> testEntityPage = new Page<>();
         List<TestEntity> all = mapper.findAllById(testEntityPage,5);
-        testEntityPage.setResults(all);
         System.out.println(testEntityPage);
     }
 }
