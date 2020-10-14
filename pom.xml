@@ -32,7 +32,7 @@
         <mybatis-version>3.5.4</mybatis-version>
         <lombok-version>1.18.12</lombok-version>
         <commons-lang3-version>3.9</commons-lang3-version>
-        <junit-version>4.12</junit-version>
+        <junit-version>4.13.1</junit-version>
         <spring-boot-version>2.3.2.RELEASE</spring-boot-version>
     </properties>
 
